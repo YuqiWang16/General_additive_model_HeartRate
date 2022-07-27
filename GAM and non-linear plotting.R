@@ -30,7 +30,6 @@ m0 <- gamm(HR ~ year + sex + s(egg_temp_c, k=k_value) + TbyES + s(x, by = TbyES,
 
 draw(m0$gam)
 summary(m0$gam)
-## Error, not sure why
 
 summary(m0$lme)
 ## Phy1 = 0.12, small
@@ -46,7 +45,6 @@ summary(m1$gam)
 AICctab(m0$lme,m1$lme)
 ## No need for autocorrelation
 
-## This model doesn't work for k_value > 5 :
 m2 <- gam(HR ~ year + sex + s(egg_temp_c, k=k_value) + TbyES + s(x, by = TbyES, k=k_value) + 
             s(x, egg_ID, bs = "fs", k=k_value) + s(NestID, bs = "re"),
           data = d,
@@ -267,3 +265,16 @@ m0.TS <- gam(HR ~ treat*egg_seq  + egg_temp +year+sex+
              rho = 0.912, data = data, AR.start = data$start.event)
 summary(m0.TS)
 
+#==================================================
+## ploting
+#=================
+
+par(mfrow=c(2,2),cex.axis = 1.25, cex.lab = 1.25, bg = "white")
+plot_smooth(m2, view = "Inc_day", plot_all = "egg_seq", rug = F, col=c("deepskyblue2","tan2"), lwd=c(1.75, 2), lty=c("solid", "solid"), ylab = "Heart rate/bpm", ylim = c(200,320), legend_plot_all =  list(x=18.5,y=330), hide.label = TRUE, main = "control 1st vs 2nd")
+
+#add legend
+gfc <- getFigCoords()
+legend(10, 320, legend = c("1st","2nd"), text.col = c("deepskyblue2", "tan2"), col = c("deepskyblue2", "tan2"), lty = "solid", lwd = 1.75,text.font = 2, xjust = 1, yjust = 1, bty = "n", xpd = TRUE)
+
+#plot difference
+plot_diff(m2, view = "Inc_day", comp = list(egg_seq=c("1","2")), col = "grey40", lty = "longdash", lwd = 1.75, hide.label = TRUE,ylim = c(-40,40))
